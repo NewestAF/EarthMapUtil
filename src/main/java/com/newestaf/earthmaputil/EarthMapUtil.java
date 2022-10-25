@@ -1,13 +1,16 @@
 package com.newestaf.earthmaputil;
 
+import com.newestaf.earthmaputil.config.ConfigurationListener;
+import com.newestaf.earthmaputil.config.ConfigurationManager;
+import com.newestaf.earthmaputil.config.ConfigurationManager.ConfigurationManagerBuilder;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class EarthMapUtil extends JavaPlugin {
+public final class EarthMapUtil extends JavaPlugin implements ConfigurationListener {
 
 
     private static EarthMapUtil instance;
-    private FileConfiguration config;
+    private ConfigurationManager configurationManager;
 
     public static EarthMapUtil getInstance() {
         return instance;
@@ -15,8 +18,11 @@ public final class EarthMapUtil extends JavaPlugin {
     @Override
     public void onEnable() {
         setInstance(this);
-
-        config = getConfig();
+        configurationManager = new ConfigurationManagerBuilder(this)
+                .listener(this)
+                .prefix("main")
+                .validate(true)
+                .build();
 
         String[] locations = {
                 "10, 70, 10",
@@ -25,10 +31,6 @@ public final class EarthMapUtil extends JavaPlugin {
                 "-10, 70, -10",
                 "0, 70, 0"
         };
-
-        config.addDefault("locations", locations);
-        config.options().copyDefaults(true);
-        saveConfig();
 
     }
 
@@ -39,11 +41,18 @@ public final class EarthMapUtil extends JavaPlugin {
 
     }
 
-    private void
-
     private void setInstance(EarthMapUtil instance) {
         EarthMapUtil.instance = instance;
     }
 
 
+    @Override
+    public Object onConfigurationValidate(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
+        return null;
+    }
+
+    @Override
+    public Object onConfigurationChanged(ConfigurationManager configurationManager, String key, Object oldVal, Object newVal) {
+        return null;
+    }
 }

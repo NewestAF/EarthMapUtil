@@ -1,4 +1,4 @@
 name: EarthMapUtil
 version: '${version}'
 main: com.newestaf.earthmaputil.EarthMapUtil
-api-version: 1.16
+api-version: 1.17
