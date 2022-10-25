@@ -1,9 +1,8 @@
 package com.newestaf.earthmaputil;
 
-import com.newestaf.earthmaputil.config.ConfigurationListener;
-import com.newestaf.earthmaputil.config.ConfigurationManager;
-import com.newestaf.earthmaputil.config.ConfigurationManager.ConfigurationManagerBuilder;
-import org.bukkit.configuration.file.FileConfiguration;
+import com.newestaf.config.ConfigurationListener;
+import com.newestaf.config.ConfigurationManager;
+import com.newestaf.config.ConfigurationManager.ConfigurationManagerBuilder;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class EarthMapUtil extends JavaPlugin implements ConfigurationListener {
