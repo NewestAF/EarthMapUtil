@@ -75,17 +75,23 @@ public class DatabaseManager implements AutoCloseable {
         }
     }
 
-//    public void select(String tableName, String[] columns, List<String> predicates) throws SQLException {
-//        String fullName = prefix + tableName;
-//        Statement stmt = connection.createStatement();
-//        try {
-//
-//
-//        } catch (SQLException e) {
-//            LogUtils.warning("can't execute " + stmt + ": " + e.getMessage());
-//            throw e;
-//        }
-//    }
+    public void select(String tableName, String[] columns, SQLCondition predicates) throws SQLException {
+        String fullName = prefix + tableName;
+        Statement stmt = connection.createStatement();
+        try {
+            if (tableExists(fullName)) {
+                StringBuilder columnsStringBuilder =  new StringBuilder();
+                for (String s : columns) {
+                    columnsStringBuilder.append(s).append(", ");
+                }
+                stmt.executeUpdate("SELECT " + columnsStringBuilder + " FROM " + fullName + " WHERE " + predicates);
+            }
+        }
+        catch (SQLException e) {
+            LogUtils.warning("can't execute " + stmt + ": " + e.getMessage());
+            throw e;
+        }
+    }
 
     private void shutdown() {
         try {
@@ -110,14 +116,6 @@ public class DatabaseManager implements AutoCloseable {
         ResultSet tables = dbm.getTables(null , null, table, null);
         return tables.next();
     }
-
-//    private String handlePredicates(List<String> predicates) {
-//        HashSet<String> current = new HashSet<>(predicates);
-//
-//        if (predicates.get(0).equals("=")) {
-//
-//        }
-//    }
 
     @Override
     public void close() {
