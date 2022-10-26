@@ -2,7 +2,7 @@ package com.newestaf.earthmaputil.util;
 
 public class SQLCondition {
 
-    enum ConditionType {
+    public enum ConditionType {
         EQUALS,
         NOT_EQUALS,
         GREATER_THAN,

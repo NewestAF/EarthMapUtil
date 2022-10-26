@@ -26,13 +26,14 @@ public class DatabaseManager implements AutoCloseable {
                 LogUtils.info("renamed DB table " + tableName + " to " + fullName);
             }
             else if (!tableExists(fullName)) {
-                StringBuilder sb =  new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 for (String s : column) {
                     sb.append(s).append(", ");
                 }
-                stmt.executeUpdate("CREATE TABLE " + fullName + "(" + sb+ ")");
+                stmt.executeUpdate("CREATE TABLE " + fullName + "(" + sb + ")");
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             LogUtils.warning("can't execute " + stmt + ": " + e.getMessage());
             throw e;
         }
@@ -43,13 +44,14 @@ public class DatabaseManager implements AutoCloseable {
         Statement stmt = connection.createStatement();
         try {
             if (tableExists(fullName)) {
-                StringBuilder sb =  new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 for (String s : values) {
                     sb.append(s).append(", ");
                 }
                 stmt.executeUpdate("INSERT INTO " + fullName + " VALUES (" + sb + ")");
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             LogUtils.warning("can't execute " + stmt + ": " + e.getMessage());
             throw e;
         }
@@ -60,32 +62,49 @@ public class DatabaseManager implements AutoCloseable {
         Statement stmt = connection.createStatement();
         try {
             if (tableExists(fullName)) {
-                StringBuilder valueStringBuilder =  new StringBuilder();
-                StringBuilder columnsStringBuilder =  new StringBuilder();
+                StringBuilder valueStringBuilder = new StringBuilder();
+                StringBuilder columnsStringBuilder = new StringBuilder();
                 for (int i = 0; i < values.length; i++) {
                     valueStringBuilder.append(values[i]).append(", ");
                     columnsStringBuilder.append(columns[i]).append(", ");
                 }
                 stmt.executeUpdate("INSERT INTO " + fullName + "(" + columnsStringBuilder + ")"
-                        + " VALUES (" + valueStringBuilder + ")");
+                                           + " VALUES (" + valueStringBuilder + ")");
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             LogUtils.warning("can't execute " + stmt + ": " + e.getMessage());
             throw e;
         }
     }
 
-    public void select(String tableName, String[] columns, SQLCondition predicates) throws SQLException {
+    public ResultSet select(String tableName, SQLCondition predicates) throws SQLException {
         String fullName = prefix + tableName;
         Statement stmt = connection.createStatement();
         try {
             if (tableExists(fullName)) {
-                StringBuilder columnsStringBuilder =  new StringBuilder();
+                stmt.executeUpdate("SELECT " + " * " + " FROM " + fullName + " WHERE " + predicates);
+            }
+            return stmt.getResultSet();
+        }
+        catch (SQLException e) {
+            LogUtils.warning("can't execute " + stmt + ": " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public ResultSet select(String tableName, String[] columns, SQLCondition predicates) throws SQLException {
+        String fullName = prefix + tableName;
+        Statement stmt = connection.createStatement();
+        try {
+            if (tableExists(fullName)) {
+                StringBuilder columnsStringBuilder = new StringBuilder();
                 for (String s : columns) {
                     columnsStringBuilder.append(s).append(", ");
                 }
                 stmt.executeUpdate("SELECT " + columnsStringBuilder + " FROM " + fullName + " WHERE " + predicates);
             }
+            return stmt.getResultSet();
         }
         catch (SQLException e) {
             LogUtils.warning("can't execute " + stmt + ": " + e.getMessage());
@@ -98,9 +117,11 @@ public class DatabaseManager implements AutoCloseable {
             if (!connection.getAutoCommit()) {
                 connection.rollback();
             }
-            Debugger.getInstance().debug("Closing DB Connection to " + connection.getMetaData().getDatabaseProductName());
+            Debugger.getInstance()
+                    .debug("Closing DB Connection to " + connection.getMetaData().getDatabaseProductName());
             connection.close();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -113,7 +134,7 @@ public class DatabaseManager implements AutoCloseable {
 
     private boolean tableExists(String table) throws SQLException {
         DatabaseMetaData dbm = connection.getMetaData();
-        ResultSet tables = dbm.getTables(null , null, table, null);
+        ResultSet tables = dbm.getTables(null, null, table, null);
         return tables.next();
     }
 
