@@ -1,6 +1,8 @@
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.newestaf.bukkit-executor' version '1.0.0'
+//    id 'com.vjh0107.bukkit-executor' version '1.0.0'
 }
 
 group = 'com.newestaf'
@@ -8,6 +10,7 @@ version = '1.0'
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven {
         name = 'papermc-repo'
         url = 'https://repo.papermc.io/repository/maven-public/'
@@ -29,6 +32,22 @@ dependencies {
 
 }
 
+bukkitExecutor {
+    // 활성화여부를 결정할 수 있습니다.
+    enabled.set(true)
+    // 의존할 AbstractArchiveTask
+    archiveTask.set(shadowJar)
+    // 버킷이 있는 DirectoryProperty, 이 위에서 jvm 이 실행됩니다.
+    bukkitDir.set(file("testBukkit/"))
+    // 버킷의 jar 파일
+    bukkitFileName.set("paper-1.17.1-411.jar")
+}
+
+task("buildAndTest") {
+    dependsOn("shadowJar")
+    finalizedBy("runBukkit")
+}
+
 def targetJavaVersion = 17
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
@@ -43,6 +62,14 @@ tasks.withType(JavaCompile).configureEach {
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         options.release = targetJavaVersion
     }
+}
+
+jar {
+    destinationDir(file("testBukkit/plugins"))
+}
+
+shadowJar {
+    destinationDir(file("testBukkit/plugins"))
 }
 
 processResources {
