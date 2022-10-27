@@ -1,5 +1,6 @@
 package com.newestaf.earthmaputil.util;
 
+import com.newestaf.exception.NewestAFException;
 import com.newestaf.util.Debugger;
 import com.newestaf.util.LogUtils;
 
@@ -17,20 +18,26 @@ public class DatabaseManager implements AutoCloseable {
         makeDBConnection(dbFile);
     }
 
-    public void createTable(String tableName, String... column) throws SQLException {
+    public static String handleColumnsOrValues(String... columnsOrValues) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < columnsOrValues.length; i++) {
+            String columnOrValue = columnsOrValues[i];
+            if (i == columnsOrValues.length - 1) {
+                builder.append(columnOrValue);
+            }
+            else {
+                builder.append(columnOrValue).append(", ");
+            }
+        }
+        return builder.toString();
+    }
+
+    public void createTable(String tableName, String columns) throws SQLException {
         String fullName = prefix + tableName;
         Statement stmt = connection.createStatement();
         try {
-            if (tableExists(tableName)) {
-                stmt.executeUpdate("ALTER TABLE " + tableName + " RENAME TO " + fullName);
-                LogUtils.info("renamed DB table " + tableName + " to " + fullName);
-            }
-            else if (!tableExists(fullName)) {
-                StringBuilder sb = new StringBuilder();
-                for (String s : column) {
-                    sb.append(s).append(", ");
-                }
-                stmt.executeUpdate("CREATE TABLE " + fullName + "(" + sb + ")");
+            if (!tableExists(fullName)) {
+                stmt.executeUpdate("CREATE TABLE " + fullName + "(" + columns + ")");
             }
         }
         catch (SQLException e) {
@@ -39,16 +46,14 @@ public class DatabaseManager implements AutoCloseable {
         }
     }
 
-    public void insert(String tableName, String... values) throws SQLException {
+    public void insert(String tableName, String values) throws SQLException {
         String fullName = prefix + tableName;
         Statement stmt = connection.createStatement();
         try {
             if (tableExists(fullName)) {
-                StringBuilder sb = new StringBuilder();
-                for (String s : values) {
-                    sb.append(s).append(", ");
-                }
-                stmt.executeUpdate("INSERT INTO " + fullName + " VALUES (" + sb + ")");
+                String query = "INSERT INTO " + fullName + " VALUES (" + values + ")";
+                LogUtils.info(query);
+                stmt.executeUpdate(query);
             }
         }
         catch (SQLException e) {
@@ -57,24 +62,35 @@ public class DatabaseManager implements AutoCloseable {
         }
     }
 
-    public void insert(String tableName, String[] columns, String[] values) throws SQLException {
+    public void insert(String tableName, String columns, String values) throws SQLException {
         String fullName = prefix + tableName;
         Statement stmt = connection.createStatement();
         try {
             if (tableExists(fullName)) {
-                StringBuilder valueStringBuilder = new StringBuilder();
-                StringBuilder columnsStringBuilder = new StringBuilder();
-                for (int i = 0; i < values.length; i++) {
-                    valueStringBuilder.append(values[i]).append(", ");
-                    columnsStringBuilder.append(columns[i]).append(", ");
-                }
-                stmt.executeUpdate("INSERT INTO " + fullName + "(" + columnsStringBuilder + ")"
-                                           + " VALUES (" + valueStringBuilder + ")");
+                stmt.executeUpdate("INSERT INTO " + fullName + "(" + columns + ")"
+                                           + " VALUES (" + values + ")");
             }
         }
         catch (SQLException e) {
             LogUtils.warning("can't execute " + stmt + ": " + e.getMessage());
             throw e;
+        }
+    }
+
+    public boolean isExist(String tableName, SQLCondition predicates) {
+        String fullName = prefix + tableName;
+        try (Statement stmt = connection.createStatement()) {
+            String query = "SELECT EXISTS(SELECT 1 FROM " + fullName + " WHERE " + predicates + ") as success";
+            LogUtils.info(query);
+            stmt.execute(query);
+            ResultSet resultSet = stmt.getResultSet();
+            if (resultSet.next()) {
+                return resultSet.getBoolean("success");
+            }
+            return false;
+        }
+        catch (SQLException e) {
+            throw new NewestAFException("cant execute");
         }
     }
 
@@ -83,9 +99,15 @@ public class DatabaseManager implements AutoCloseable {
         Statement stmt = connection.createStatement();
         try {
             if (tableExists(fullName)) {
-                stmt.executeUpdate("SELECT " + " * " + " FROM " + fullName + " WHERE " + predicates);
+                String query = "SELECT " + " * " + " FROM " + fullName + " WHERE " + predicates;
+                LogUtils.info(query);
+                stmt.execute(query);
+                return stmt.getResultSet();
             }
-            return stmt.getResultSet();
+            else {
+                throw new NewestAFException("table " + fullName + " doesn't exist");
+            }
+
         }
         catch (SQLException e) {
             LogUtils.warning("can't execute " + stmt + ": " + e.getMessage());
@@ -93,16 +115,12 @@ public class DatabaseManager implements AutoCloseable {
         }
     }
 
-    public ResultSet select(String tableName, String[] columns, SQLCondition predicates) throws SQLException {
+    public ResultSet select(String tableName, String columns, SQLCondition predicates) throws SQLException {
         String fullName = prefix + tableName;
         Statement stmt = connection.createStatement();
         try {
             if (tableExists(fullName)) {
-                StringBuilder columnsStringBuilder = new StringBuilder();
-                for (String s : columns) {
-                    columnsStringBuilder.append(s).append(", ");
-                }
-                stmt.executeUpdate("SELECT " + columnsStringBuilder + " FROM " + fullName + " WHERE " + predicates);
+                stmt.execute("SELECT " + columns + " FROM " + fullName + " WHERE " + predicates);
             }
             return stmt.getResultSet();
         }

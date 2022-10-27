@@ -5,6 +5,8 @@ import com.newestaf.config.ConfigurationManager;
 import com.newestaf.config.ConfigurationManager.ConfigurationManagerBuilder;
 import com.newestaf.earthmaputil.event.DefaultSpawnListener;
 import com.newestaf.earthmaputil.util.DirectoryStructure;
+import com.newestaf.util.Debugger;
+import com.newestaf.util.LogUtils;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -27,7 +29,7 @@ public final class EarthMapUtil extends JavaPlugin implements ConfigurationListe
     public void onEnable() {
         setInstance(this);
         setupUtility();
-        initTest();
+//        initTest();
         registerListeners();
 
     }
@@ -42,6 +44,8 @@ public final class EarthMapUtil extends JavaPlugin implements ConfigurationListe
     }
 
     private void setupUtility() {
+        LogUtils.init(this);
+        Debugger.getInstance().setTarget(getServer().getConsoleSender());
         configManager = new ConfigurationManagerBuilder(this)
                 .listener(this)
                 .prefix("main")

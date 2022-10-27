@@ -6,6 +6,7 @@ import com.newestaf.earthmaputil.EarthMapUtil;
 import com.newestaf.earthmaputil.util.DatabaseManager;
 import com.newestaf.earthmaputil.util.DirectoryStructure;
 import com.newestaf.earthmaputil.util.SQLCondition;
+import com.newestaf.util.LogUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,6 +16,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -23,16 +25,20 @@ public class DefaultSpawnListener implements Listener {
     private final ConfigurationManager configManager;
 
 
-    public DefaultSpawnListener(){
+    public DefaultSpawnListener() {
         configManager = new ConfigurationManagerBuilder(EarthMapUtil.getInstance()).prefix("main")
                 .build();
-        try (DatabaseManager db = new DatabaseManager(DirectoryStructure.getDatabaseDir(), "players")) {
+        String columns = DatabaseManager.handleColumnsOrValues(
+                "uuid VARCHAR(36) NOT NULL",
+                "x DOUBLE NOT NULL",
+                "y DOUBLE NOT NULL",
+                "z DOUBLE NOT NULL"
+        );
+
+        try (DatabaseManager db = new DatabaseManager(DirectoryStructure.getDatabaseDir(), "players_")) {
             db.createTable(
                     "start_position",
-                    "uuid VARCHAR(36) NOT NULL",
-                    "x DOUBLE NOT NULL",
-                    "y DOUBLE NOT NULL",
-                    "z DOUBLE NOT NULL"
+                    columns
             );
         }
         catch (SQLException | ClassNotFoundException e) {
@@ -45,12 +51,19 @@ public class DefaultSpawnListener implements Listener {
         Player player = event.getPlayer();
 
         try (
-                DatabaseManager db = new DatabaseManager(DirectoryStructure.getDatabaseDir(), "players")
+                DatabaseManager db = new DatabaseManager(DirectoryStructure.getDatabaseDir(), "players_")
         ) {
-            if (!db.select(
+            boolean isExist = db.isExist(
                     "start_position",
-                    new SQLCondition("uuid", player.getUniqueId().toString(), SQLCondition.ConditionType.EQUALS)
-            ).next()) {
+                    new SQLCondition(
+                            "uuid",
+                            player.getUniqueId().toString(),
+                            SQLCondition.ConditionType.EQUALS
+                    )
+            );
+            LogUtils.info(String.valueOf(isExist));
+
+            if (!isExist) {
 
                 @SuppressWarnings("unchecked")
                 List<String> rawLocations = ((List<String>) configManager.get("locations"));
@@ -66,12 +79,16 @@ public class DefaultSpawnListener implements Listener {
 
                 player.teleport(location);
 
-                db.insert(
-                        "start_position",
+                String values = DatabaseManager.handleColumnsOrValues(
                         player.getUniqueId().toString(),
                         String.valueOf(location.getX()),
                         String.valueOf(location.getY()),
                         String.valueOf(location.getZ())
+                );
+
+                db.insert(
+                        "start_position",
+                        values
                 );
             }
         }
@@ -86,7 +103,7 @@ public class DefaultSpawnListener implements Listener {
             return;
         }
         try (
-                DatabaseManager db = new DatabaseManager(DirectoryStructure.getDatabaseDir(), "players")
+                DatabaseManager db = new DatabaseManager(DirectoryStructure.getDatabaseDir(), "players_")
         ) {
 
             ResultSet resultSet = db.select(

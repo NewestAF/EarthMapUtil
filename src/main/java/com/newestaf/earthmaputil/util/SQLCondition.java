@@ -23,12 +23,12 @@ public class SQLCondition {
 
     public String toString() {
         return switch (conditionType) {
-            case EQUALS -> column + " = " + value;
-            case NOT_EQUALS -> column + " != " + value;
-            case GREATER_THAN -> column + " > " + value;
-            case LESS_THAN -> column + " < " + value;
-            case GREATER_THAN_OR_EQUAL_TO -> column + " >= " + value;
-            case LESS_THAN_OR_EQUAL_TO -> column + " <= " + value;
+            case EQUALS -> column + " = " + "'" + value + "'";
+            case NOT_EQUALS -> column + " != " + "'" + value + "'";
+            case GREATER_THAN -> column + " > " + "'" + value + "'";
+            case LESS_THAN -> column + " < " + "'" + value + "'";
+            case GREATER_THAN_OR_EQUAL_TO -> column + " >= " + "'" + value + "'";
+            case LESS_THAN_OR_EQUAL_TO -> column + " <= " + "'" + value + "'";
         };
     }
 
