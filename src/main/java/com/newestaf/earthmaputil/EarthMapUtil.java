@@ -3,10 +3,11 @@ package com.newestaf.earthmaputil;
 import com.newestaf.config.ConfigurationListener;
 import com.newestaf.config.ConfigurationManager;
 import com.newestaf.config.ConfigurationManager.ConfigurationManagerBuilder;
-import com.newestaf.earthmaputil.event.PlayerJoinListener;
+import com.newestaf.earthmaputil.event.DefaultSpawnListener;
+import com.newestaf.earthmaputil.util.DirectoryStructure;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,26 +26,34 @@ public final class EarthMapUtil extends JavaPlugin implements ConfigurationListe
     @Override
     public void onEnable() {
         setInstance(this);
-        configManager = new ConfigurationManagerBuilder(this)
-                .listener(this)
-                .prefix("main")
-                .validate(true)
-                .build();
+        setupUtility();
+        initTest();
+        registerListeners();
 
+    }
+
+    private void initTest() {
         List<String> locations = new ArrayList<>();
         locations.add("10, 70, 10");
         locations.add("-10, 70, 10");
         locations.add("10, 70, -10");
         configManager.insert("locations", locations);
         saveConfig();
+    }
 
-        try {
-            getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
-        }
-        catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    private void setupUtility() {
+        configManager = new ConfigurationManagerBuilder(this)
+                .listener(this)
+                .prefix("main")
+                .validate(true)
+                .build();
+        DirectoryStructure.setup(this);
+    }
 
+    private void registerListeners() {
+        PluginManager pluginManager = getServer().getPluginManager();
+
+        pluginManager.registerEvents(new DefaultSpawnListener(), this);
     }
 
 
