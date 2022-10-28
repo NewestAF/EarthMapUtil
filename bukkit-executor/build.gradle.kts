@@ -1,5 +1,5 @@
 plugins {
-    id("java-gradle-plugin")
+    `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
 }

@@ -52,7 +52,6 @@ public class DatabaseManager implements AutoCloseable {
         try {
             if (tableExists(fullName)) {
                 String query = "INSERT INTO " + fullName + " VALUES (" + values + ")";
-                LogUtils.info(query);
                 stmt.executeUpdate(query);
             }
         }
@@ -81,7 +80,6 @@ public class DatabaseManager implements AutoCloseable {
         String fullName = prefix + tableName;
         try (Statement stmt = connection.createStatement()) {
             String query = "SELECT EXISTS(SELECT 1 FROM " + fullName + " WHERE " + predicates + ") as success";
-            LogUtils.info(query);
             stmt.execute(query);
             ResultSet resultSet = stmt.getResultSet();
             if (resultSet.next()) {
@@ -100,7 +98,6 @@ public class DatabaseManager implements AutoCloseable {
         try {
             if (tableExists(fullName)) {
                 String query = "SELECT " + " * " + " FROM " + fullName + " WHERE " + predicates;
-                LogUtils.info(query);
                 stmt.execute(query);
                 return stmt.getResultSet();
             }
@@ -120,7 +117,8 @@ public class DatabaseManager implements AutoCloseable {
         Statement stmt = connection.createStatement();
         try {
             if (tableExists(fullName)) {
-                stmt.execute("SELECT " + columns + " FROM " + fullName + " WHERE " + predicates);
+                String query = "SELECT " + columns + " FROM " + fullName + " WHERE " + predicates;
+                stmt.execute(query);
             }
             return stmt.getResultSet();
         }
