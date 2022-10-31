@@ -4,6 +4,7 @@ import com.newestaf.config.ConfigurationListener;
 import com.newestaf.config.ConfigurationManager;
 import com.newestaf.config.ConfigurationManager.ConfigurationManagerBuilder;
 import com.newestaf.earthmaputil.event.DefaultSpawnListener;
+import com.newestaf.earthmaputil.nation.NationManager;
 import com.newestaf.earthmaputil.util.DirectoryStructure;
 import com.newestaf.util.Debugger;
 import com.newestaf.util.LogUtils;
@@ -21,9 +22,17 @@ public final class EarthMapUtil extends JavaPlugin implements ConfigurationListe
     private static EarthMapUtil instance;
     private ConfigurationManager configManager;
 
+    private NationManager nationManager;
+
     public static EarthMapUtil getInstance() {
         return instance;
     }
+
+    public static NationManager getNationManager() {
+        return getInstance().nationManager;
+    }
+
+
 
     @Override
     public void onEnable() {
