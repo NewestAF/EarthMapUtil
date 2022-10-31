@@ -5,6 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.meta.ItemMeta;
 
+@SuppressWarnings("deprecation")
 public class NationBuildListener implements Listener {
 
     @EventHandler
@@ -13,7 +14,7 @@ public class NationBuildListener implements Listener {
         if (meta == null) {
             return;
         }
-        if (meta.getDisplayName().equals("Nation Build Tool")) {
+        if (meta.getLore().contains("Nation Block")) {
             event.setCancelled(true);
             // TODO
         }

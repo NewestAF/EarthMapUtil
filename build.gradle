@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'com.newestaf.bukkit-executor' version '1.0.0'
-//    id 'com.vjh0107.bukkit-executor' version '1.0.0'
+//    id 'com.vjh0107.bukkit-executor' version '1.0.1-beta1'
 }
 
 group = 'com.newestaf'
