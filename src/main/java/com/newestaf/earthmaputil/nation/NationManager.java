@@ -34,7 +34,7 @@ public class NationManager {
 
     public Nation getNationByName(String name) {
         for (Nation nation : this.nations.values()) {
-            if (nation.getName().toLowerCase().equals(name.toLowerCase())) return nation;
+            if (nation.getName().equalsIgnoreCase(name)) return nation;
         }
         return null;
     }
@@ -46,10 +46,6 @@ public class NationManager {
 
     public int getNextNationID() {
         return this.nextNationID;
-    }
-
-    public void setNextNationID(int nextNationID) {
-        this.nextNationID = nextNationID;
     }
 
 

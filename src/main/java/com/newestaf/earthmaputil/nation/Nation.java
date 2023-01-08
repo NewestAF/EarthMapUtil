@@ -16,18 +16,19 @@ import java.util.concurrent.TimeUnit;
 public class Nation {
 
     private String name;
-    private int id;
+    private final int id;
     private UUID ownerUUID;
     private final ArrayList<UUID> members;
     private final ArrayList<UUID> invitedPlayers;
 
-    public Nation(String name, Player owner, int id) {
+    public Nation(String name, Player owner) {
+        NationManager nationManager = EarthMapUtil.getNationManager();
         this.name = name;
-        this.id = id;
+        this.id = nationManager.nextNationID();
         this.ownerUUID = owner.getUniqueId();
         this.members = new ArrayList<>();
         this.invitedPlayers = new ArrayList<>();
-        EarthMapUtil.getNationManager().addNation(this);
+        nationManager.addNation(this);
     }
 
     public Nation(JSONObject jsonNation) {

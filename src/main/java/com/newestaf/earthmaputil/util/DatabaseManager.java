@@ -1,9 +1,8 @@
 package com.newestaf.earthmaputil.util;
 
-import com.newestaf.exception.NewestAFException;
-import com.newestaf.util.Debugger;
-import com.newestaf.util.LogUtils;
-
+import com.newestaf.newestutil.exception.NewestAFException;
+import com.newestaf.newestutil.util.Debugger;
+import com.newestaf.newestutil.util.LogUtils;
 import java.io.File;
 import java.sql.*;
 

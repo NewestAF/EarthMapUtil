@@ -1,12 +1,12 @@
 package com.newestaf.earthmaputil.event;
 
-import com.newestaf.config.ConfigurationManager;
-import com.newestaf.config.ConfigurationManager.ConfigurationManagerBuilder;
 import com.newestaf.earthmaputil.EarthMapUtil;
 import com.newestaf.earthmaputil.util.DatabaseManager;
 import com.newestaf.earthmaputil.util.DirectoryStructure;
 import com.newestaf.earthmaputil.util.SQLCondition;
-import com.newestaf.util.LogUtils;
+import com.newestaf.newestutil.config.ConfigurationManager;
+import com.newestaf.newestutil.config.ConfigurationManager.ConfigurationManagerBuilder;
+import com.newestaf.newestutil.util.LogUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,7 +16,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 

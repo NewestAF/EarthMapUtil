@@ -1,22 +1,20 @@
 package com.newestaf.earthmaputil;
 
-import com.newestaf.config.ConfigurationListener;
-import com.newestaf.config.ConfigurationManager;
-import com.newestaf.config.ConfigurationManager.ConfigurationManagerBuilder;
 import com.newestaf.earthmaputil.event.DefaultSpawnListener;
 import com.newestaf.earthmaputil.nation.NationManager;
 import com.newestaf.earthmaputil.util.DirectoryStructure;
-import com.newestaf.util.Debugger;
-import com.newestaf.util.LogUtils;
+import com.newestaf.newestutil.config.ConfigurationManager;
+import com.newestaf.newestutil.config.ConfigurationManager.ConfigurationManagerBuilder;
+import com.newestaf.newestutil.util.Debugger;
+import com.newestaf.newestutil.util.LogUtils;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public final class EarthMapUtil extends JavaPlugin implements ConfigurationListener {
+public final class EarthMapUtil extends JavaPlugin {
 
 
     private static EarthMapUtil instance;
@@ -56,7 +54,6 @@ public final class EarthMapUtil extends JavaPlugin implements ConfigurationListe
         LogUtils.init(this);
         Debugger.getInstance().setTarget(getServer().getConsoleSender());
         configManager = new ConfigurationManagerBuilder(this)
-                .listener(this)
                 .prefix("main")
                 .validate(true)
                 .build();
@@ -79,24 +76,4 @@ public final class EarthMapUtil extends JavaPlugin implements ConfigurationListe
         EarthMapUtil.instance = instance;
     }
 
-
-    @Override
-    public Object onConfigurationValidate(
-            ConfigurationManager configurationManager,
-            String key,
-            Object oldVal,
-            Object newVal
-    ) {
-        return null;
-    }
-
-    @Override
-    public Object onConfigurationChanged(
-            ConfigurationManager configurationManager,
-            String key,
-            Object oldVal,
-            Object newVal
-    ) {
-        return null;
-    }
 }
