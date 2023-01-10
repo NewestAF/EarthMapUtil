@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'com.newestaf.bukkit-executor' version '1.0.0'
-//    id 'com.vjh0107.bukkit-executor' version '1.0.1-beta1'
 }
 
 group = 'com.newestaf'
@@ -23,14 +22,20 @@ repositories {
         name = 'purpur-repo'
         url = 'https://repo.purpurmc.org/snapshots/'
     }
+    maven {
+        url = "https://repo.aikar.co/content/groups/aikar/"
+    }
+    maven {
+        url = "https://mvnrepository.com/artifact/com.google.code.gson/gson"
+    }
 }
 
 dependencies {
+    //noinspection VulnerableLibrariesLocal
     compileOnly 'org.purpurmc.purpur:purpur-api:1.17.1-R0.1-SNAPSHOT'
-    implementation("co.aikar:acf-paper:0.5.1")
-//    implementation 'org.xerial:sqlite-jdbc:3.39.3.0'
+    implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
+    compileOnly 'com.google.code.gson:gson:2.8.9'
     implementation(fileTree(dir: 'libs', include: ['*.jar']))
-
 }
 
 bukkitExecutor {
@@ -44,7 +49,7 @@ bukkitExecutor {
     bukkitFileName.set("paper-1.17.1-411.jar")
 }
 
-task("buildAndTest") {
+tasks.register('buildAndTest') {
     dependsOn("shadowJar")
     finalizedBy("runBukkit")
 }
@@ -65,6 +70,10 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+compileJava {
+    options.compilerArgs += ["-parameters"]
+}
+
 jar {
     destinationDir(file("testBukkit/plugins"))
 }
@@ -72,6 +81,8 @@ jar {
 
 shadowJar {
     destinationDir(file("testBukkit/plugins"))
+    relocate('co.aikar.commands', 'com.newestaf.acf')
+    relocate('co.aikar.locales', 'com.newestaf.locales')
 }
 
 processResources {

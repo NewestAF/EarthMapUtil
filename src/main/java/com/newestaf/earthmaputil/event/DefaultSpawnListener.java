@@ -25,8 +25,7 @@ public class DefaultSpawnListener implements Listener {
 
 
     public DefaultSpawnListener() {
-        configManager = new ConfigurationManagerBuilder(EarthMapUtil.getInstance()).prefix("main")
-                .build();
+        configManager = EarthMapUtil.getConfigurationManager();
         String columns = DatabaseManager.handleColumnsOrValues(
                 "uuid VARCHAR(36) NOT NULL",
                 "x DOUBLE NOT NULL",

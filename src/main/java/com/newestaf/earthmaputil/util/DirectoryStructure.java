@@ -1,6 +1,7 @@
 package com.newestaf.earthmaputil.util;
 
 import com.newestaf.earthmaputil.EarthMapUtil;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 
@@ -11,11 +12,15 @@ public class DirectoryStructure {
 
     private static final String databaseFolderName = "data";
 
+    public static File getPluginDir() {
+        return databaseDir;
+    }
+
     public static File getDatabaseDir() {
         return databaseDir;
     }
 
-    public static void setup(EarthMapUtil plugin) {
+    public static void setup(Plugin plugin) {
         setupDirectoryStructure();
 
     }
@@ -32,7 +37,7 @@ public class DirectoryStructure {
             return;
         }
         if (!dir.mkdir()) {
-            EarthMapUtil.getInstance().getLogger().warning("Can't make directory " + dir.getName());
+            EarthMapUtil.getPlugin().getLogger().warning("Can't make directory " + dir.getName());
         }
     }
 
